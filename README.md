@@ -54,5 +54,5 @@
     ```
 
 
-   [tfhome]: https://www.terraform.io
+    [tfhome]: https://www.terraform.io
     [tfgoogle]: https://registry.terraform.io/providers/hashicorp/aws/latest/docs

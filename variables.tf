@@ -25,6 +25,10 @@ variable "vpc_cidr" {
 
 variable "vpc_id" {
     description = "id of existing VPC"
-    default = "vpc-0896bbf0e944782d8"
-  
+    default = "vpc-0896bbf0e944782d8" 
+}
+
+variable "instance_type" {
+    description = "type of desired instance"
+    default = "t3.micro"
 }

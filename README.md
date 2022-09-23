@@ -56,3 +56,6 @@ terraform destroy
 
 [tfhome]: https://www.terraform.io
 [tfgoogle]: https://registry.terraform.io/providers/hashicorp/aws/latest/docs
+
+[tfhome]: https://www.terraform.io
+[tfgoogle]: https://registry.terraform.io/providers/hashicorp/aws/latest/docs

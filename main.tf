@@ -1,23 +1,5 @@
-provider "aws" {}
-
-
-resource "aws_internet_gateway" "ig_ws" {
-  # vpc_id = aws_default_vpc.vpc_apache.id
-  vpc_id = aws_vpc.vpc_apache.id
-
-  tags = {
-    "Name" = var.ig_tag
-  }
-}
-
-resource "aws_subnet" "subnet_ws" {
-  # vpc_id     = aws_default_vpc.vpc_default.id
-  vpc_id = aws_vpc.vpc_apache.id
-  cidr_block = var.subnet_cidr
-
-  tags = {
-    "Name" = var.subnet_tag
-  }
+provider "aws" {
+  region = var.aws_region
 }
 
 # resource "aws_default_vpc" "vpc_default" {
@@ -30,6 +12,26 @@ resource "aws_vpc" "vpc_apache" {
   cidr_block = var.vpc_cidr
   enable_dns_hostnames = true
   enable_dns_support   = true
+}
+
+resource "aws_subnet" "subnet_ws" {
+  # vpc_id     = aws_default_vpc.vpc_default.id
+  vpc_id = aws_vpc.vpc_apache.id
+  availability_zone = element(data.aws_availability_zones.azs_apache.names, 0)
+  cidr_block = var.subnet_cidr
+
+  tags = {
+    "Name" = var.subnet_tag
+  }
+}
+
+resource "aws_internet_gateway" "ig_ws" {
+  # vpc_id = aws_default_vpc.vpc_apache.id
+  vpc_id = aws_vpc.vpc_apache.id
+
+  tags = {
+    "Name" = var.ig_tag
+  }
 }
 
 resource "aws_security_group" "sg_ws" {
@@ -61,13 +63,39 @@ resource "aws_security_group" "sg_ws" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    "Name" = "internet-gateway-sg"
+  }
 }
 
-# resource "aws_main_route_table_association" "rt_ws" {
-#   # vpc_id = aws_default_vpc.vpc_default.id
-#   vpc_id = aws_vpc.vpc_apache.id
-#   route_table_id = var.route_table_id  
-# }
+data "aws_route_table" "main_route_table" {
+  filter {
+    name = "association.main"
+    values = ["true"]
+  }
+
+  filter {
+    name = "vpc-id"
+    values = [aws_vpc.vpc_apache.id]
+  }
+}
+
+resource "aws_default_route_table" "internet_route" {
+  default_route_table_id = data.aws_route_table.main_route_table.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.ig_ws.id
+  }
+
+  tags = {
+    "Name" = "terrform_routeTable"
+  }
+}
+
+data "aws_availability_zones" "azs_apache" {
+  state = "available"  
+}
 
 resource "tls_private_key" "priv_key" {
   algorithm = "RSA"
@@ -82,14 +110,6 @@ data "aws_route_table" "route_table_main" {
   filter {
     name = "vpc-id"
     values = [aws_vpc.vpc_apache.id]
-  }
-}
-
-resource "aws_default_route_table" "internet_route" {
-  default_route_table_id = data.aws_route_table.route_table_main.id
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.ig_ws.id
   }
 }
 
@@ -116,14 +136,14 @@ resource "aws_instance" "instance_ws" {
   instance_type = var.instance_type
   associate_public_ip_address = true
 
-  connection {
-    type        = "ssh"
-    user        = "admin"
-    private_key = file("~/.ssh/id_rsa")
-    host        = self.public_ip
-  }
+  # connection {
+  #   type        = "ssh"
+  #   user        = "admin"
+  #   private_key = file("~/.ssh/id_rsa")
+  #   host        = self.public_ip
+  # }
 
-  user_data = file("files/install_nginx.sh")
+  # user_data = file("files/install_nginx.sh")
 
   # depends_on = [
   #   aws_internet_gateway.ig_ws

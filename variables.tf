@@ -1,6 +1,6 @@
 variable "aws_region" {
   description = "desired region for infrastructure"
-  default     = "us-east-1"
+  default     = "us-east-1a"
 }
 
 variable "ig_tag" {
@@ -30,7 +30,7 @@ variable "vpc_id" {
 
 variable "route_table_id" {
   description = "route table id"
-  default = "rtb-01f77f141a8fe81e3"
+  default     = "rtb-01f77f141a8fe81e3"
 }
 
 variable "instance_type" {

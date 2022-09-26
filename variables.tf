@@ -10,7 +10,7 @@ variable "ig_tag" {
 
 variable "subnet_cidr" {
   description = "cidr range of subnet"
-  default     = "172.61.0.0/20"
+  default     = "10.0.16.0/20"
 }
 
 variable "subnet_tag" {
@@ -20,12 +20,17 @@ variable "subnet_tag" {
 
 variable "vpc_cidr" {
   description = "existing cidr range"
-  default     = ""
+  default     = "10.0.0.0/16"
 }
 
 variable "vpc_id" {
   description = "id of existing VPC"
-  default     = "vpc-0896bbf0e944782d8"
+  default     = "vpc-03730028866386a6d"
+}
+
+variable "route_table_id" {
+  description = "route table id"
+  default = "rtb-01f77f141a8fe81e3"
 }
 
 variable "instance_type" {

@@ -2,37 +2,38 @@ provider "aws" {
   region = var.aws_region
 }
 
-resource "aws-vpc" "vpc_default" {
-  default = true
+//moved to modules/
+# resource "aws-vpc" "vpc_default" {
+#   default = true
 
-  tags = {
-    "Name" = "default-vpc"
-  }
-}
+#   tags = {
+#     "Name" = "default-vpc"
+#   }
+# }
 
-data "aws_subnet_ids" "default_subnet" {
-  vpc_id = aws_default_vpc.vpc_default.id
-}
+# data "aws_subnet_ids" "default_subnet" {
+#   vpc_id = aws_default_vpc.vpc_default.id
+# }
 
 # resource "aws_security_group" "web_sg" {
 #   # name = "${var.app_name}-instance-security-group"
 # }
 
-resource "aws_security_group_rule" "allow_http_inbound" {
-  type              = "ingress"
-  security_group_id = aws_security_group.web_sg.id
+# resource "aws_security_group_rule" "allow_http_inbound" {
+#   type              = "ingress"
+#   security_group_id = aws_security_group.web_sg.id
 
-  from_port   = 8080
-  to_port     = 8080
-  protocol    = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
-}
+#   from_port   = 8080
+#   to_port     = 8080
+#   protocol    = "tcp"
+#   cidr_blocks = ["0.0.0.0/0"]
+# }
 
 resource "aws_instance" "instance_ws" {
-  ami             = var.ami_instance
-  instance_type   = var.instance_type
+  ami           = var.ami_instance
+  instance_type = var.instance_type
   # security_groups = [aws_security_group.server_sg.name]
-  security_groups = [ aws_security_group.web_sg.name ]
+  security_groups = [aws_security_group.web_sg.name]
 
   tags = {
     "Name" = var.instance_name
